@@ -74,53 +74,58 @@ if st.session_state["step"] >= 1:
 	if "video_url" in st.session_state and st.session_state["video_url"]:
 		st.video(st.session_state["video_url"])
 
-		metadata = get_video_metadata(st.session_state["video_url"])
-		st.success(f"Loaded video of duration {metadata["duration"]} seconds.")
+		if not "metadata" in st.session_state:
+			metadata = get_video_metadata(st.session_state["video_url"])
+			st.success(f"Loaded video of duration {metadata["duration"]} seconds.")
 
-		if not metadata["audio"]:
-			st.error("The file has no audio")
-		else:
-			st.session_state["metadata"] = metadata
-			st.session_state["step"] = 2
+			if not metadata["audio"]:
+				st.error("The file has no audio")
+			else:
+				st.session_state["metadata"] = metadata
+				st.session_state["step"] = 2
 
 if st.session_state["step"] >= 2:
 	st.write("## Step 2: Extracting Audio from the Video")
 
-	st.session_state["audio_url"] = st.session_state["video_url"].replace(".mp4", ".mp3")
+	if not "audio_url" in st.session_state:
+		st.session_state["audio_url"] = st.session_state["video_url"].replace(".mp4", ".mp3")
 
-	audio = st.session_state["metadata"]["audio"]
-	audio.write_audiofile(st.session_state["audio_url"])
+		audio = st.session_state["metadata"]["audio"]
+		audio.write_audiofile(st.session_state["audio_url"])
+		st.session_state["step"] = 3
 
 	st.success("Audio extracted successfully")
 	st.audio(st.session_state["audio_url"])
 
-	st.session_state["step"] = 3
 
 if st.session_state["step"] >= 3:
 	st.write("## Step 3: Transcribing Audio through Whisper")
 
 	st.write("If you have loaded the demo video, then you can skip the transcription and load the one already generated.")
-	skip_transcription = st.button("Skip transcription")
+	skip_transcription = st.button("Skip transcription", type="primary")
+	do_transcription = st.button("Perform transcription")
 
-	try:
-		if not skip_transcription:
-			transcription = transcribe_audio(st.session_state["audio_url"])
-		else:
-			with open("./assets/transcription.json", "r") as fp:
-				transcription = json.load(fp)
-	except Exception as e:
-		st.error(e)
+	if not "transcription" in st.session_state:
+		transcription = None
+		try:
+			if do_transcription:
+				transcription = transcribe_audio(st.session_state["audio_url"])
+			
+			if skip_transcription:
+				with open("./assets/transcription.json", "r") as fp:
+					transcription = json.load(fp)
+		except Exception as e:
+			st.error(e)
+		
+		if (do_transcription or skip_transcription):
+			st.session_state["transcription"] = transcription
+			st.session_state["step"] = 4
 
-	if transcription:
+	if "transcription" in st.session_state:
 		st.success("Completed the transcription for given audio")
 
 		with st.container(height=400):
-			st.write(transcription["text"])
-
-		st.session_state["transcription"] = transcription
-		st.session_state["step"] = 4
-	else:
-		st.error("Unknown error occured while performing the transcription. Please try again later")
+			st.write(st.session_state["transcription"]["text"])
 
 if st.session_state["step"] >= 4:
 	st.write("## Step 4: Using LLM to extract hooks from the audio transcription")
@@ -130,62 +135,73 @@ if st.session_state["step"] >= 4:
 	non_demo_button = st.button("Are you running other video?", type="secondary")
 
 	llm_output = None
-	if non_demo_button:
-		try:
-			llm_output = get_hook_segments(client, st.session_state["transcription"])
-			llm_output = json.loads(llm_output)
-		except Exception as e:
-			st.error(e)
-			st.write("You can however run the demo version as each step is cached for demo purposes")
-	
-	if demo_button:
-		with open("./assets/llm.json", "r") as fp:
-			llm_output = json.load(fp)
+	if "hooks" not in st.session_state:
+		if non_demo_button:
+			try:
+				llm_output = get_hook_segments(client, st.session_state["transcription"])
+				llm_output = json.loads(llm_output)
+			except Exception as e:
+				st.error(e)
+				st.write("You can however run the demo version as each step is cached for demo purposes")
+		
+		if demo_button:
+			with open("./assets/llm.json", "r") as fp:
+				llm_output = json.load(fp)
 
-	if llm_output is not None:
-		# preparing hooks for display and saving
-		hooks = []
-		for hook in llm_output:
-			start = st.session_state["metadata"]["duration"]
-			end = 0
-			text = ""
+		if llm_output is not None:
+			# preparing hooks for display and saving
+			hooks = []
+			for hook in llm_output:
+				start = st.session_state["metadata"]["duration"]
+				end = 0
+				text = ""
 
-			for id in hook["ids"]:
-				segment = st.session_state["transcription"]["segments"][id]
-				start = min(start, segment["start"])
-				end = max(end, segment["end"])
-				text += segment["text"]
+				for id in hook["ids"]:
+					segment = st.session_state["transcription"]["segments"][id]
+					start = min(start, segment["start"])
+					end = max(end, segment["end"])
+					text += segment["text"]
+				
+				hooks.append({
+					"start": start,
+					"end": end,
+					"text": text,
+				})
+
+			st.session_state["hooks"] = hooks
+
+		if "hooks" in st.session_state:
+			for id, hook in enumerate(st.session_state["hooks"]):
+				with st.container(height=200):
+					st.write(f"### Hook-{id+1}")
+					st.write(f"**Time = {hook['end']-hook['start']:.1f} seconds**")
+					st.write(hook["text"])
 			
-			hooks.append({
-				"start": start,
-				"end": end,
-				"text": text,
-			})
-
-		st.session_state["hooks"] = hooks
-
-		for id, hook in enumerate(hooks):
-			with st.container(height=200):
-				st.write(f"### Hook-{id+1}")
-				st.write(f"**Time = {hook['end']-hook['start']:.1f} seconds**")
-				st.write(hook["text"])
-		st.session_state["step"] = 5
+			st.session_state["step"] = 5
 
 if st.session_state["step"] >= 5:
 	st.write("## View and Download Clips")
 	hooks = st.session_state["hooks"]
 	
-	for i, hook in enumerate(hooks):
-		clip_path = trim_video(st.session_state["video_url"], hook["start"], hook["end"])
-		st.success(f"Created shorts-{i+1} from the video")
-		st.video(clip_path)
+	if not "clips" in st.session_state:
+		clips = []
+		for i, hook in enumerate(hooks):
+			clip_path = trim_video(st.session_state["video_url"], hook["start"], hook["end"])
+			clips.append(clip_path)
 
-		with open(clip_path, "rb") as fp:
-			st.download_button(
-				label=f"Download short-{i+1}",
-				data = fp,
-				file_name=f"short-{i+1}.mp4",
-				mime="video/mp4"
-			)
+		st.session_state["clips"] = clips
 
-	st.write("# Thanks for using")
+	if "clips" in st.session_state:
+		for i, clip_path in st.session_state["clips"]:
+			st.success(f"Created shorts-{i+1} from the video")
+			st.video(clip_path)
+
+			with open(clip_path, "rb") as fp:
+				st.download_button(
+					label=f"Download short-{i+1}",
+					data = fp,
+					file_name=f"short-{i+1}.mp4",
+					mime="video/mp4"
+				)
+
+		st.write("# Thanks for using")
