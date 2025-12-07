@@ -30,22 +30,24 @@ def add_simple_subtitles(clip, segments):
 	text_clips = []
 
 	for segment in segments:
-		text = TextClip(
-			font="./assets/futuram.ttf",
-			text=segment["text"].strip(),
-			font_size=80,
-			text_align="left",
-			method="caption",
-			size=(clip.w*2//3, None),
-			color="#000000",
-			bg_color="#ffffff",
-		)
+		# for text in segment["text"].split(" "):
+			text = TextClip(
+				font="./assets/futuram.ttf",
+				text=segment["text"].strip(),
+				font_size=80,
+				margin=(20, 20),
+				text_align="left",
+				method="caption",
+				size=(clip.w*2//3, None),
+				color="#000000",
+				bg_color="#ffffff",
+			)
 
-		text = text.with_duration(segment["end"]-segment["start"])
-		text = text.with_start(segment["start"])
-		text = text.with_position((margin, clip.h-text.h-margin))
+			text = text.with_duration(segment["end"]-segment["start"])
+			text = text.with_start(segment["start"])
+			text = text.with_position((margin, clip.h-text.h-margin))
 
-		text_clips.append(text)
+			text_clips.append(text)
 
 	return text_clips
 	
