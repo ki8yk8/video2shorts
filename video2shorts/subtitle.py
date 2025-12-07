@@ -10,7 +10,25 @@ def add_subtitles(video_path, segments):
 
 	clip = VideoFileClip(video_path)
 
+	text_clips = add_simple_subtitles(clip, segments)
+	final = CompositeVideoClip([clip, *text_clips])
+	final.write_videofile(
+		output_path,
+		codec="libx264",
+		audio_codec="aac",
+		remove_temp=True,
+		preset="ultrafast",
+	)
+
+	clip.close()
+	final.close()
+
+	return output_path
+
+
+def add_simple_subtitles(clip, segments):
 	text_clips = []
+
 	for segment in segments:
 		text = TextClip(
 			font="./assets/futuram.ttf",
@@ -28,17 +46,6 @@ def add_subtitles(video_path, segments):
 		text = text.with_position((margin, clip.h-text.h-margin))
 
 		text_clips.append(text)
+
+	return text_clips
 	
-	final = CompositeVideoClip([clip, *text_clips])
-	final.write_videofile(
-		output_path,
-		codec="libx264",
-		audio_codec="aac",
-		remove_temp=True,
-		preset="ultrafast",
-	)
-
-	clip.close()
-	final.close()
-
-	return output_path
