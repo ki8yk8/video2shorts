@@ -2,6 +2,7 @@ import streamlit as st
 import tempfile
 # from video2shorts.youtube import is_yt_link_valid, get_yt_video_metadata
 from video2shorts.video import get_video_metadata
+from video2shorts.whisper import transcribe_audio
 
 # sets the title before any st.title is called
 st.set_page_config(page_title="Video2Shorts")
@@ -80,7 +81,13 @@ if st.session_state["step"] == 2:
 	st.session_state["step"] = 3
 
 if st.session_state["step"] == 3:
-	pass
+	st.write("## Step 3: Transcribing Audio through Whisper")
+
+	try:
+		transcription = transcribe_audio(st.session_state["audio_url"])
+	except Exception as e:
+		st.error(e)
+
 if st.session_state["step"] == 4:
 	pass
 if st.session_state["step"] == 5:
