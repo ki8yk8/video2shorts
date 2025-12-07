@@ -125,23 +125,53 @@ if st.session_state["step"] >= 3:
 if st.session_state["step"] >= 4:
 	st.write("## Step 4: Using LLM to extract hooks from the audio transcription")
 
-	try:
-		hook_segments = get_hook_segments(client, st.session_state["transcription"])
-		st.session_state["hooks_info"] = hook_segments
-	except Exception as e:
-		st.error(e)
-		st.write("You can however run the demo version as each step is cached for demo purposes")
-		
-		skip_llm = st.button(label="Use demo hook segments")
+	st.write("To save the token, we have saved the result of LLM for the demo. So, click the respective button.")
+	demo_button = st.button("Are your running siege demo video?", type="primary")
+	non_demo_button = st.button("Are you running other video?", type="secondary")
 
-	if "hooks_info" in st.session_state:
-		st.write(st.session_state["hooks_info"])
+	llm_output = None
+	if non_demo_button:
+		try:
+			llm_output = get_hook_segments(client, st.session_state["transcription"])
+			llm_output = json.loads(llm_output)
+		except Exception as e:
+			st.error(e)
+			st.write("You can however run the demo version as each step is cached for demo purposes")
+	
+	if demo_button:
+		with open("./assets/llm.json", "r") as fp:
+			llm_output = json.load(fp)
+
+	if llm_output is not None:
+		# preparing hooks for display and saving
+		hooks = []
+		for hook in llm_output:
+			start = st.session_state["metadata"]["duration"]
+			end = 0
+			text = ""
+
+			for id in hook["ids"]:
+				segment = st.session_state["transcription"]["segments"][id]
+				start = min(start, segment["start"])
+				end = max(end, segment["end"])
+				text += segment["text"]
+			
+			hooks.append({
+				"start": start,
+				"end": end,
+				"text": text,
+			})
+
+		st.session_state["hooks"] = hooks
+
+		for id, hook in enumerate(hooks):
+			with st.container(height=200):
+				st.write(f"### Hook-{id+1}")
+				st.write(f"**Time = {hook['end']-hook['start']:.1f} seconds**")
+				st.write(hook["text"])
 		st.session_state["step"] = 5
-
 
 if st.session_state["step"] == 5:
 	pass
 if st.session_state["step"] == 6:
-	pass
-if st.session_state["step"] == 7:
 	pass
