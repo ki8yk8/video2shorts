@@ -139,7 +139,7 @@ if st.session_state["step"] >= 4:
 		if non_demo_button:
 			try:
 				llm_output = get_hook_segments(client, st.session_state["transcription"])
-				llm_output = json.loads(llm_output)
+				llm_output = llm_output
 			except Exception as e:
 				st.error(e)
 				st.write("You can however run the demo version as each step is cached for demo purposes")
@@ -155,6 +155,7 @@ if st.session_state["step"] >= 4:
 				start = st.session_state["metadata"]["duration"]
 				end = 0
 				text = ""
+				title = hook["title"]
 
 				for id in hook["ids"]:
 					segment = st.session_state["transcription"]["segments"][id]
@@ -166,6 +167,7 @@ if st.session_state["step"] >= 4:
 					"start": start,
 					"end": end,
 					"text": text,
+					"title": title,
 				})
 
 			st.session_state["hooks"] = hooks
@@ -173,7 +175,7 @@ if st.session_state["step"] >= 4:
 		if "hooks" in st.session_state:
 			for id, hook in enumerate(st.session_state["hooks"]):
 				with st.container(height=200):
-					st.write(f"### Hook-{id+1}")
+					st.write(f"### {id+1}: {hook['title']}")
 					st.write(f"**Time = {hook['end']-hook['start']:.1f} seconds**")
 					st.write(hook["text"])
 			
