@@ -1,4 +1,5 @@
 import streamlit as st
+from video2shorts.youtube import is_yt_link_valid, get_yt_video_metadata
 
 # sets the title before any st.title is called
 st.set_page_config(page_title="Video2Shorts")
@@ -37,7 +38,12 @@ if st.session_state["step"] == 1:
 	)
 
 	if youtube_video_url:
-		st.write("The video URL is", youtube_video_url)
+		if not is_yt_link_valid(youtube_video_url):
+			st.error("Invalid Youtube link detected! Please check your link...", icon="🔴")
+		else:
+			st.write("Using YouTube URL", youtube_video_url)
+			
+			video_metadata = get_yt_video_metadata(youtube_video_url)
 
 if st.session_state["step"] == 2:
 	pass

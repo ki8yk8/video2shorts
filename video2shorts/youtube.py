@@ -1,5 +1,13 @@
 def is_yt_link_valid(link):
-	pass
+	# TODO: only for first phase 
+	if link.startswith("https://www.youtube.com/"):
+		return True
+	
+	return False
 
 def get_yt_video_metadata(url):
-	pass
+	return {
+		"title": "Some title", 
+		"thumbnail": "some thumbnail", 
+		"length": 10
+	}
