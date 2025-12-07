@@ -7,7 +7,11 @@ st.set_page_config(page_title="Video2Shorts")
 """
 # Video2Short
 
-Convert your youtube video automatically to shorts using GenAI tools
+Convert your youtube video automatically to shorts using GenAI tools.
+
+**Note** that the application uses some models like Whisper which requires GPU but, we cannot provide you that at the moment since, this is a demo only. So, to use the app fully, look for the options in page to load the demo defaults only. 
+
+**Note** if you are running this app locally then, you can ignore the last note. Just run the pipeline as usual.
 """
 
 # the app is multistep application with following steps;
