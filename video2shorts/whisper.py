@@ -4,7 +4,6 @@ import streamlit as st
 
 @st.cache_data
 def transcribe_audio(audio_path, size="tiny"):
-	print("ran here")
 	if not os.path.exists(audio_path):
 		raise FileNotFoundError(f"File not found at '{audio_path}'")
 
@@ -12,7 +11,3 @@ def transcribe_audio(audio_path, size="tiny"):
 	result = model.transcribe(audio_path)
 
 	return result
-
-
-def load_audio_transcription(transcription_path):
-	pass
