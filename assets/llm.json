@@ -2,88 +2,8 @@
   {
     "time": 31.64,
     "ids": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7
+      0
     ],
     "title": "Neural Networks Explained: The Basics of AI Brains"
-  },
-  {
-    "time": 97.8,
-    "ids": [
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30,
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-      38,
-      39,
-      40,
-      41,
-      42,
-      43,
-      44,
-      45,
-      46,
-      47,
-      48,
-      49,
-      50,
-      51,
-      52,
-      53
-    ],
-    "title": "AI Decision Making: How Neural Networks Decide with a Surfing Example!"
-  },
-  {
-    "time": 39.2,
-    "ids": [
-      56,
-      57,
-      58,
-      59,
-      60,
-      61,
-      62,
-      63,
-      64,
-      65,
-      66,
-      67,
-      68
-    ],
-    "title": "The Secret Sauce of AI: How Neural Networks Learn (Cost Function & Gradient Descent)"
-  },
-  {
-    "time": 31.12,
-    "ids": [
-      69,
-      70,
-      71,
-      72,
-      73,
-      74,
-      75,
-      76,
-      77,
-      78
-    ],
-    "title": "Beyond the Basics: Different Types of Neural Networks (CNNs, RNNs)"
   }
 ]

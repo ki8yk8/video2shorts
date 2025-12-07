@@ -1,6 +1,7 @@
 from video2shorts.video import get_video_metadata, trim_video
 from video2shorts.whisper import transcribe_audio
 from video2shorts.llm import get_hook_segments
+from video2shorts.subtitle import add_subtitles
 
 import json
 import os
@@ -39,8 +40,8 @@ Convert your video automatically to shorts using GenAI tools.
 # 2. Extract the audio from video
 # 3. Transcribe the audio
 # 4. Extract hooks for the video from the audio
-# 5. Crop the videos into small hook segments
-# 6. Download the YT shorts
+# 5. Crop the videos into small hook segments and download it
+# 6. Add subtitle animation on clip
 if "step" not in st.session_state:
 	st.session_state["step"] = 1
 
@@ -168,6 +169,7 @@ if st.session_state["step"] >= 4:
 					"end": end,
 					"text": text,
 					"title": title,
+					"ids": hook["ids"],
 				})
 
 			st.session_state["hooks"] = hooks
@@ -185,8 +187,6 @@ if st.session_state["step"] >= 5:
 	st.write("## View and Download Clips")
 	hooks = st.session_state["hooks"]
 
-	# TODO: Selection of videos to convert into shorts
-	
 	if not "clips" in st.session_state:
 		progress_bar = st.progress(0.0, text="Creating shorts")
 
@@ -211,5 +211,17 @@ if st.session_state["step"] >= 5:
 					file_name=f"{st.session_state["hooks"][i]["title"]}.mp4",
 					mime="video/mp4"
 				)
+		
+		st.session_state["step"] = 6
 
-		st.write("# Thanks for using")
+if st.session_state["step"] >= 6:
+	for i, clip in enumerate(st.session_state["clips"]):
+		hook = st.session_state["hooks"][i]
+		segments = []
+
+		for id in hook["ids"]:
+			segment = st.session_state["transcription"]["segments"][id]
+			segments.append(segment)
+
+		subtitle_clip = add_subtitles(clip, segments)
+		st.video(subtitle_clip)
