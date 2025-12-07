@@ -30,7 +30,7 @@ if "step" not in st.session_state:
 	st.session_state["step"] = 1
 
 # 1. Upload video and extract its metadata
-if st.session_state["step"] == 1:
+if st.session_state["step"] >= 1:
 	"""
 	## Step 1: Upload your video
 
@@ -68,7 +68,7 @@ if st.session_state["step"] == 1:
 			st.session_state["metadata"] = metadata
 			st.session_state["step"] = 2
 
-if st.session_state["step"] == 2:
+if st.session_state["step"] >= 2:
 	st.write("## Step 2: Extracting Audio from the Video")
 
 	st.session_state["audio_url"] = st.session_state["video_url"].replace(".mp4", ".mp3")
@@ -81,7 +81,7 @@ if st.session_state["step"] == 2:
 
 	st.session_state["step"] = 3
 
-if st.session_state["step"] == 3:
+if st.session_state["step"] >= 3:
 	st.write("## Step 3: Transcribing Audio through Whisper")
 
 	st.write("If you have loaded the demo video, then you can skip the transcription and load the one already generated.")
@@ -108,6 +108,8 @@ if st.session_state["step"] == 3:
 
 if st.session_state["step"] == 4:
 	st.write("## Step 4: Using LLM to extract hooks from the audio transcription")
+
+
 
 if st.session_state["step"] == 5:
 	pass
