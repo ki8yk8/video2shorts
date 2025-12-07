@@ -32,18 +32,30 @@ if st.session_state["step"] == 1:
 	## Insert your YouTube Video URL
 	The url is in the format: `https://www.youtube.com/watch?v=...`
 	"""
+	
+	is_demo = st.button("Load demo URL for Siege", type="primary")
 	youtube_video_url = st.text_input(
 		"YouTube Video URL", 
 		placeholder="https://www.youtube.com/watch?v=jmmW0F0biz0"
 	)
 
+	if is_demo:
+		youtube_video_url = "https://www.youtube.com/watch?v=jmmW0F0biz0"
+
 	if youtube_video_url:
 		if not is_yt_link_valid(youtube_video_url):
 			st.error("Invalid Youtube link detected! Please check your link...", icon="🔴")
 		else:
-			st.write("Using YouTube URL", youtube_video_url)
+			if is_demo:
+				st.write("**Using demo Youtube link** ", youtube_video_url)
+			else:
+				st.write("**Using Youtube link** ", youtube_video_url)
 			
 			video_metadata = get_yt_video_metadata(youtube_video_url)
+			st.write("**Title** ", video_metadata["title"])
+			st.write("**Author** ", video_metadata["author"])
+			st.write("**Length** ", video_metadata["length"])
+			st.image(video_metadata["thumbnail_url"], "Thumbnail for loaded video")
 
 if st.session_state["step"] == 2:
 	pass
