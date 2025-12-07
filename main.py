@@ -3,6 +3,7 @@ import tempfile
 # from video2shorts.youtube import is_yt_link_valid, get_yt_video_metadata
 from video2shorts.video import get_video_metadata
 from video2shorts.whisper import transcribe_audio
+import json
 
 # sets the title before any st.title is called
 st.set_page_config(page_title="Video2Shorts")
@@ -83,13 +84,31 @@ if st.session_state["step"] == 2:
 if st.session_state["step"] == 3:
 	st.write("## Step 3: Transcribing Audio through Whisper")
 
+	st.write("If you have loaded the demo video, then you can skip the transcription and load the one already generated.")
+	skip_transcription = st.button("Skip transcription")
+
 	try:
-		transcription = transcribe_audio(st.session_state["audio_url"])
+		if not skip_transcription:
+			transcription = transcribe_audio(st.session_state["audio_url"])
+		else:
+			with open("./assets/transcription.json", "r") as fp:
+				transcription = json.load(fp)
 	except Exception as e:
 		st.error(e)
 
+	if transcription:
+		st.success("Completed the transcription for given audio")
+
+		with st.container(height=400):
+			st.write(transcription["text"])
+
+		st.session_state["step"] = 4
+	else:
+		st.error("Unknown error occured while performing the transcription. Please try again later")
+
 if st.session_state["step"] == 4:
-	pass
+	st.write("## Step 4: Using LLM to extract hooks from the audio transcription")
+
 if st.session_state["step"] == 5:
 	pass
 if st.session_state["step"] == 6:
