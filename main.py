@@ -1,9 +1,24 @@
-import streamlit as st
-import tempfile
-# from video2shorts.youtube import is_yt_link_valid, get_yt_video_metadata
 from video2shorts.video import get_video_metadata
 from video2shorts.whisper import transcribe_audio
+from video2shorts.llm import get_hook_segments
+
 import json
+import os
+import tempfile
+
+from dotenv import load_dotenv
+from google import genai
+import streamlit as st
+
+load_dotenv()
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+	st.error("Couldn't load the gemini api key needed for the program")
+	raise Exception("Couldn't load the gemini api key needed for the program")
+
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # sets the title before any st.title is called
 st.set_page_config(page_title="Video2Shorts")
@@ -102,13 +117,26 @@ if st.session_state["step"] >= 3:
 		with st.container(height=400):
 			st.write(transcription["text"])
 
+		st.session_state["transcription"] = transcription
 		st.session_state["step"] = 4
 	else:
 		st.error("Unknown error occured while performing the transcription. Please try again later")
 
-if st.session_state["step"] == 4:
+if st.session_state["step"] >= 4:
 	st.write("## Step 4: Using LLM to extract hooks from the audio transcription")
 
+	try:
+		hook_segments = get_hook_segments(client, st.session_state["transcription"])
+		st.session_state["hooks_info"] = hook_segments
+	except Exception as e:
+		st.error(e)
+		st.write("You can however run the demo version as each step is cached for demo purposes")
+		
+		skip_llm = st.button(label="Use demo hook segments")
+
+	if "hooks_info" in st.session_state:
+		st.write(st.session_state["hooks_info"])
+		st.session_state["step"] = 5
 
 
 if st.session_state["step"] == 5:
