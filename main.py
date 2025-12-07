@@ -45,14 +45,19 @@ if st.session_state["step"] == 1:
 	if uploaded_file is not None:
 		tfile = tempfile.NamedTemporaryFile(delete=False)
 		tfile.write(uploaded_file.read())
-
-		st.success("Uploaded video successfully")
-		st.video(tfile.name)
-
+		
 		# adding the tempfile name into the session state
 		st.session_state["video_url"] = tfile.name
 
-		metadata = get_video_metadata(tfile.name)
+		st.success("Uploaded video successfully")
+	
+	if is_demo:
+		st.session_state["video_url"] = "./assets/sample.mp4"
+
+	if "video_url" in st.session_state and st.session_state["video_url"]:
+		st.video(st.session_state["video_url"])
+
+		metadata = get_video_metadata(st.session_state["video_url"])
 		st.success(f"Loaded video of duration {metadata["duration"]} seconds.")
 
 		if not metadata["audio"]:
