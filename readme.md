@@ -21,3 +21,30 @@ streamlit run main.py
 
 ### FFMPEG
 - Note, that `ffmpeg` library is required for this application to run. So, please install it in local system before use.
+
+## Demo
+To run, the application you can visit [https://video2shorts.streamlit.app/](https://video2shorts.streamlit.app/)
+
+### Input Video
+<video width="640" height="360" controls>
+  <source src="./assets/sample.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+### Output Shorts
+<video width="640" height="360" controls>
+  <source src="./assets/demos/AI Decision Making_ How Neural Networks Decide with a Surfing Example!.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<video width="640" height="360" controls>
+  <source src="./assets/demos/Beyond the Basics_ Different Types of Neural Networks (CNNs, RNNs).mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<video width="640" height="360" controls>
+  <source src="./assets/demos/Neural Networks Explained_ The Basics of AI Brains.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<video width="640" height="360" controls>
+  <source src="./assets/demos/The Secret Sauce of AI_ How Neural Networks Learn (Cost Function & Gradient Descent).mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
