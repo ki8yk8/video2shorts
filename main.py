@@ -1,5 +1,7 @@
 import streamlit as st
-from video2shorts.youtube import is_yt_link_valid, get_yt_video_metadata
+import tempfile
+# from video2shorts.youtube import is_yt_link_valid, get_yt_video_metadata
+from video2shorts.video import get_video_metadata
 
 # sets the title before any st.title is called
 st.set_page_config(page_title="Video2Shorts")
@@ -8,7 +10,7 @@ st.set_page_config(page_title="Video2Shorts")
 """
 # Video2Short
 
-Convert your youtube video automatically to shorts using GenAI tools.
+Convert your video automatically to shorts using GenAI tools.
 
 **Note** that the application uses some models like Whisper which requires GPU but, we cannot provide you that at the moment since, this is a demo only. So, to use the app fully, look for the options in page to load the demo defaults only. 
 
@@ -16,49 +18,52 @@ Convert your youtube video automatically to shorts using GenAI tools.
 """
 
 # the app is multistep application with following steps;
-# 1. Get youtube video url and extract its metadata
-# 2. Download the youtube video
-# 3. Extract the audio from video
-# 4. Transcribe the audio
-# 5. Extract hooks for the video from the audio
-# 6. Crop the videos into small hook segments
-# 7. Download the YT shorts
+# 1. Upload video and extract its metadata
+# 2. Extract the audio from video
+# 3. Transcribe the audio
+# 4. Extract hooks for the video from the audio
+# 5. Crop the videos into small hook segments
+# 6. Download the YT shorts
 if "step" not in st.session_state:
 	st.session_state["step"] = 1
 
-# 1. Get Youtube video url and extract its metadata
+# 1. Upload video and extract its metadata
 if st.session_state["step"] == 1:
 	"""
-	## Insert your YouTube Video URL
-	The url is in the format: `https://www.youtube.com/watch?v=...`
+	## Step 1: Upload your video
+
+	If you are running the app on Streamlit, use the demo video as heavy processing has already been completed for it.
 	"""
 	
-	is_demo = st.button("Load demo URL for Siege", type="primary")
-	youtube_video_url = st.text_input(
-		"YouTube Video URL", 
-		placeholder="https://www.youtube.com/watch?v=jmmW0F0biz0"
+	is_demo = st.button("Load demo video for Siege", type="primary")
+	uploaded_file = st.file_uploader(
+		label="Upload your video here",
+		accept_multiple_files=False,
+		type="mp4",
 	)
 
-	if is_demo:
-		youtube_video_url = "https://www.youtube.com/watch?v=jmmW0F0biz0"
+	if uploaded_file is not None:
+		tfile = tempfile.NamedTemporaryFile(delete=False)
+		tfile.write(uploaded_file.read())
 
-	if youtube_video_url:
-		if not is_yt_link_valid(youtube_video_url):
-			st.error("Invalid Youtube link detected! Please check your link...", icon="🔴")
+		st.success("Uploaded video successfully")
+		st.video(tfile.name)
+
+		# adding the tempfile name into the session state
+		st.session_state["video_url"] = tfile.name
+
+		metadata = get_video_metadata(tfile.name)
+		st.success(f"Loaded video of duration {metadata["duration"]} seconds.")
+
+		if not metadata["audio"]:
+			st.error("The file has no audio")
 		else:
-			if is_demo:
-				st.write("**Using demo Youtube link** ", youtube_video_url)
-			else:
-				st.write("**Using Youtube link** ", youtube_video_url)
-			
-			video_metadata = get_yt_video_metadata(youtube_video_url)
-			st.write("**Title** ", video_metadata["title"])
-			st.write("**Author** ", video_metadata["author"])
-			st.write("**Length** ", video_metadata["length"])
-			st.image(video_metadata["thumbnail_url"], "Thumbnail for loaded video")
+			st.session_state["metadata"] = metadata
+			st.session_state["step"] = 2
 
 if st.session_state["step"] == 2:
-	pass
+	st.write("## Step 2: Extracting Audio from the Video")
+
 if st.session_state["step"] == 3:
 	pass
 if st.session_state["step"] == 4:
