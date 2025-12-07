@@ -69,6 +69,16 @@ if st.session_state["step"] == 1:
 if st.session_state["step"] == 2:
 	st.write("## Step 2: Extracting Audio from the Video")
 
+	st.session_state["audio_url"] = st.session_state["video_url"].replace(".mp4", ".mp3")
+
+	audio = st.session_state["metadata"]["audio"]
+	audio.write_audiofile(st.session_state["audio_url"])
+
+	st.success("Audio extracted successfully")
+	st.audio(st.session_state["audio_url"])
+
+	st.session_state["step"] = 3
+
 if st.session_state["step"] == 3:
 	pass
 if st.session_state["step"] == 4:
