@@ -206,7 +206,7 @@ if st.session_state["step"] >= 5:
 				st.download_button(
 					label=f"Download short-{i+1}",
 					data = fp,
-					file_name=f"short-{i+1}.mp4",
+					file_name=f"{st.session_state["hooks"][i]["title"]}.mp4",
 					mime="video/mp4"
 				)
 
