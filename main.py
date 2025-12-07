@@ -1,4 +1,4 @@
-from video2shorts.video import get_video_metadata
+from video2shorts.video import get_video_metadata, trim_video
 from video2shorts.whisper import transcribe_audio
 from video2shorts.llm import get_hook_segments
 
@@ -171,7 +171,21 @@ if st.session_state["step"] >= 4:
 				st.write(hook["text"])
 		st.session_state["step"] = 5
 
-if st.session_state["step"] == 5:
-	pass
-if st.session_state["step"] == 6:
-	pass
+if st.session_state["step"] >= 5:
+	st.write("## View and Download Clips")
+	hooks = st.session_state["hooks"]
+	
+	for i, hook in enumerate(hooks):
+		clip_path = trim_video(st.session_state["video_url"], hook["start"], hook["end"])
+		st.success(f"Created shorts-{i+1} from the video")
+		st.video(clip_path)
+
+		with open(clip_path, "rb") as fp:
+			st.download_button(
+				label=f"Download short-{i+1}",
+				data = fp,
+				file_name=f"short-{i+1}.mp4",
+				mime="video/mp4"
+			)
+
+	st.write("# Thanks for using")
