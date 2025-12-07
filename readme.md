@@ -26,25 +26,10 @@ streamlit run main.py
 To run, the application you can visit [https://video2shorts.streamlit.app/](https://video2shorts.streamlit.app/)
 
 ### Input Video
-<video width="640" height="360" controls>
-  <source src="./assets/sample.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[Click this link to view input video](./assets/sample.mp4)
 
 ### Output Shorts
-<video width="640" height="360" controls>
-  <source src="./assets/demos/AI Decision Making_ How Neural Networks Decide with a Surfing Example!.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-<video width="640" height="360" controls>
-  <source src="./assets/demos/Beyond the Basics_ Different Types of Neural Networks (CNNs, RNNs).mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-<video width="640" height="360" controls>
-  <source src="./assets/demos/Neural Networks Explained_ The Basics of AI Brains.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-<video width="640" height="360" controls>
-  <source src="./assets/demos/The Secret Sauce of AI_ How Neural Networks Learn (Cost Function & Gradient Descent).mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+- [Short 1](./assets/demos/AI%20Decision%20Making_%20How%20Neural%20Networks%20Decide%20with%20a%20Surfing%20Example!.mp4)
+- [Short 2](./assets/demos/Beyond%20the%20Basics_%20Different%20Types%20of%20Neural%20Networks%20(CNNs,%20RNNs).mp4)
+- [Short 3](./assets/demos/Neural%20Networks%20Explained_%20The%20Basics%20of%20AI%20Brains.mp4)
+- [Short 4](./assets/demos/The%20Secret%20Sauce%20of%20AI_%20How%20Neural%20Networks%20Learn%20(Cost%20Function%20&%20Gradient%20Descent).mp4)
