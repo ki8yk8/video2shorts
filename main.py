@@ -172,18 +172,20 @@ if st.session_state["step"] >= 4:
 
 			st.session_state["hooks"] = hooks
 
-		if "hooks" in st.session_state:
-			for id, hook in enumerate(st.session_state["hooks"]):
-				with st.container(height=200):
-					st.write(f"### {id+1}: {hook['title']}")
-					st.write(f"**Time = {hook['end']-hook['start']:.1f} seconds**")
-					st.write(hook["text"])
-			
-			st.session_state["step"] = 5
+	if "hooks" in st.session_state:
+		for id, hook in enumerate(st.session_state["hooks"]):
+			with st.container(height=200):
+				st.write(f"### {id+1}: {hook['title']}")
+				st.write(f"**Time = {hook['end']-hook['start']:.1f} seconds**")
+				st.write(hook["text"])
+		
+		st.session_state["step"] = 5
 
 if st.session_state["step"] >= 5:
 	st.write("## View and Download Clips")
 	hooks = st.session_state["hooks"]
+
+	# TODO: Selection of videos to convert into shorts
 	
 	if not "clips" in st.session_state:
 		progress_bar = st.progress(0.0, text="Creating shorts")
