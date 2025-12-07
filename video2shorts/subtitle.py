@@ -1,6 +1,8 @@
 from moviepy import VideoFileClip, TextClip, CompositeVideoClip
 import tempfile
 
+margin = 40
+
 def add_subtitles(video_path, segments):
 	temp_file = tempfile.NamedTemporaryFile(delete=True, suffix=".mp4")
 	output_path = temp_file.name
@@ -19,14 +21,11 @@ def add_subtitles(video_path, segments):
 			size=(clip.w*2//3, None),
 			color="#000000",
 			bg_color="#ffffff",
-			duration=segment["end"]-segment["start"],
-		).with_start(segment["start"])
+		)
 
-		# text.with_position()
-		print(text.pos)
-		
-
-		print(segment["end"]-segment["start"])
+		text = text.with_duration(segment["end"]-segment["start"])
+		text = text.with_start(segment["start"])
+		text = text.with_position((margin, clip.h-text.h-margin))
 
 		text_clips.append(text)
 	
