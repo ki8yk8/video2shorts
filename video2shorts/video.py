@@ -23,5 +23,14 @@ def trim_video(path, start, end):
 	clip = VideoFileClip(path)
 	trimmed_clip = clip.subclipped(start, end)
 
-	trimmed_clip.write_videofile(output_path)
+	trimmed_clip.write_videofile(
+		output_path,
+		codec="libx264",
+		audio_codec="aac",
+		remove_temp=True,
+		preset="ultrafast",
+	)
+	clip.close()
+	trimmed_clip.close()
+
 	return output_path

@@ -184,15 +184,19 @@ if st.session_state["step"] >= 5:
 	hooks = st.session_state["hooks"]
 	
 	if not "clips" in st.session_state:
+		progress_bar = st.progress(0.0, text="Creating shorts")
+
 		clips = []
 		for i, hook in enumerate(hooks):
 			clip_path = trim_video(st.session_state["video_url"], hook["start"], hook["end"])
 			clips.append(clip_path)
+			
+			progress_bar.progress((i+1)/len(hooks), text="Creating shorts")
 
 		st.session_state["clips"] = clips
 
 	if "clips" in st.session_state:
-		for i, clip_path in st.session_state["clips"]:
+		for i, clip_path in enumerate(st.session_state["clips"]):
 			st.success(f"Created shorts-{i+1} from the video")
 			st.video(clip_path)
 
