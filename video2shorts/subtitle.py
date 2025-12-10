@@ -11,12 +11,12 @@ def add_subtitles(video_path, segments):
 	clip = VideoFileClip(video_path)
 
 	text_clip = add_simple_subtitles(clip, segments)
-	final = CompositeVideoClip([clip, text_clip])
+	final = CompositeVideoClip([clip, text_clip], size=clip.size)
 	final.write_videofile(
 		output_path,
 		codec="libx264",
 		audio_codec="aac",
-		remove_temp=True,
+		remove_temp=False,
 		preset="ultrafast",
 	)
 
@@ -60,8 +60,10 @@ def add_simple_subtitles(clip, segments):
 
 			text_clips.append(text_clip)
 
-	composite_clip = CompositeVideoClip(text_clips)
-	composite_clip = composite_clip.with_position((margin, clip.h-margin-composite_clip.h))
+	composite_clip = CompositeVideoClip(text_clips, size=clip.size)
+	h = clip.h-margin-composite_clip.h
+	composite_clip = composite_clip.with_position((margin, h))
+	composite_clip = composite_clip.with_fps(clip.fps)
 
 	return composite_clip
 	

@@ -89,7 +89,7 @@ if st.session_state["step"] >= 2:
 	st.write("## Step 2: Extracting Audio from the Video")
 
 	if not "audio_url" in st.session_state:
-		taudiofile = tempfile.NamedTemporaryFile(delete=False)
+		taudiofile = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
 		st.session_state["audio_url"] = taudiofile.name
 
 		audio = st.session_state["metadata"]["audio"]
@@ -216,13 +216,18 @@ if st.session_state["step"] >= 5:
 		st.session_state["step"] = 6
 
 if st.session_state["step"] >= 6:
-	for i, clip in enumerate(st.session_state["clips"]):
-		hook = st.session_state["hooks"][i]
-		segments = []
+	st.write("## Adding Subtitle on Overlay")
+	st.write("Feature disabled due to toomuch bugs")
+	# continue_subtitle = st.button(label="Do you want to overlay subtitle?", type="primary")
 
-		for id in hook["ids"]:
-			segment = st.session_state["transcription"]["segments"][id]
-			segments.append(segment)
+	# if continue_subtitle:
+	# 	for i, clip in enumerate(st.session_state["clips"]):
+	# 		hook = st.session_state["hooks"][i]
+	# 		segments = []
 
-		subtitle_clip = add_subtitles(clip, segments)
-		st.video(subtitle_clip)
+	# 		for id in hook["ids"]:
+	# 			segment = st.session_state["transcription"]["segments"][id]
+	# 			segments.append(segment)
+
+	# 		subtitle_clip = add_subtitles(clip, segments)
+	# 		st.video(subtitle_clip)
