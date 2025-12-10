@@ -89,10 +89,11 @@ if st.session_state["step"] >= 2:
 	st.write("## Step 2: Extracting Audio from the Video")
 
 	if not "audio_url" in st.session_state:
-		st.session_state["audio_url"] = st.session_state["video_url"].replace(".mp4", ".mp3")
+		taudiofile = tempfile.NamedTemporaryFile(delete=False)
+		st.session_state["audio_url"] = taudiofile.name
 
 		audio = st.session_state["metadata"]["audio"]
-		audio.write_audiofile(st.session_state["audio_url"])
+		audio.write_audiofile(st.session_state["audio_url"], codec="libmp3lame")
 		st.session_state["step"] = 3
 
 	st.success("Audio extracted successfully")
