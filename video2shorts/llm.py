@@ -31,13 +31,12 @@ def create_prompt(transcription):
 	- end, duration on audio where the text ends in seconds
 
 	The output should be array of objects in JSON, where each object represents a hook segment that can be converted into shorts with keys;
-	- time, total duration of the hook segment
 	- ids, array of unique id that creates the hook segments
 	- title, title for the given short for uploading on youtube
 
 	Output format
 	```json
-	[{time: 30, ids: [1, 2, ...], title: "some title"}, ...]
+	[{ids: [1, 2, ...], title: "some title"}, ...]
 	```
 
 	Donot output anything except JSON which is strict requirement.

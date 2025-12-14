@@ -141,7 +141,6 @@ if st.session_state["step"] >= 4:
 		if non_demo_button:
 			try:
 				llm_output = get_hook_segments(client, st.session_state["transcription"])
-				llm_output = llm_output
 			except Exception as e:
 				st.error(e)
 				st.write("You can however run the demo version as each step is cached for demo purposes")
@@ -164,6 +163,12 @@ if st.session_state["step"] >= 4:
 					start = min(start, segment["start"])
 					end = max(end, segment["end"])
 					text += segment["text"]
+
+				# rejecting the invalid blocks
+				if end > st.session_state["metadata"]["duration"]:
+					continue
+				else:
+					print("Valid block")
 				
 				hooks.append({
 					"start": start,
